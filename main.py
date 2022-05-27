@@ -29,14 +29,14 @@ class Player(pygame.sprite.Sprite):
 
 
 class Platform(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, width, height, x, y):
         super().__init__()
-        self.surf = pygame.Surface((50, 20))
-        self.rect = self.surf.get_rect(center=(800 - self.surf.get_width(), 250 - self.surf.get_height()))
+        self.surf = pygame.Surface((width, height))
+        self.rect = self.surf.get_rect(center=(x, y))
         self.surf.fill((255, 255, 0))
 
     def update(self, dt):
-        self.rect.move_ip(-0.1 * dt, 0)
+        self.rect.move_ip(-0.175 * dt, 0)
 
 
 class Game():
@@ -47,7 +47,8 @@ class Game():
         self.screen = pygame.display.set_mode((500, 500))
         self.player = Player()
         self.space = False
-        self.platform = Platform()
+        self.platform = Platform(50, 20, 600, 250)
+        self.ground = Platform(500, 200, 250, 400)
 
         while self.running:
             self.update()
@@ -73,6 +74,7 @@ class Game():
 
         self.screen.fill((100, 110, 110))
         self.screen.blit(self.player.surf, self.player.rect)
+        self.screen.blit(self.ground.surf, self.ground.rect)
         self.screen.blit(self.platform.surf, self.platform.rect)
         pygame.display.flip()
 
