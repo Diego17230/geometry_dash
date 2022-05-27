@@ -1,11 +1,6 @@
 import pygame
 from pygame.locals import *
 
-pygame.init()
-
-screen = pygame.display.set_mode((500, 500))
-pressed_keys = pygame.key.get_pressed()
-
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -30,7 +25,9 @@ class Game():
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.running = True
-
+        pygame.init()
+        self.screen = pygame.display.set_mode((500, 500))
+        self.pressed_keys = pygame.key.get_pressed()
         self.player = Player()
         self.platform = Platform()
 
