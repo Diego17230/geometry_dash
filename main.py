@@ -1,11 +1,6 @@
 import pygame
 from pygame.locals import *
 
-pygame.init()
-
-screen = pygame.display.set_mode((500, 500))
-pressed_keys = pygame.key.get_pressed()
-
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -18,7 +13,9 @@ class Player(pygame.sprite.Sprite):
 class Game():
     def __init__(self):
         self.running = True
-
+        pygame.init()
+        self.screen = pygame.display.set_mode((500, 500))
+        self.pressed_keys = pygame.key.get_pressed()
         self.player = Player()
 
         while self.running:
@@ -32,8 +29,8 @@ class Game():
             elif event.type == QUIT:
                 self.running = False
 
-        screen.fill((100, 110, 110))
-        screen.blit(self.player.surf, self.player.rect)
+        self.screen.fill((100, 110, 110))
+        self.screen.blit(self.player.surf, self.player.rect)
         pygame.display.flip()
 
 
