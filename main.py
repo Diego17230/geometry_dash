@@ -38,6 +38,7 @@ class Player(pygame.sprite.Sprite):
                 return True
         return False
 
+
 class Platform(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
