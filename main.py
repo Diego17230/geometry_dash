@@ -71,9 +71,9 @@ class Game():
         self.screen.blit(self.player.surf, self.player.rect)
         self.platform.update(dt)
 
-        screen.fill((100, 110, 110))
-        screen.blit(self.player.surf, self.player.rect)
-        screen.blit(self.platform.surf, self.platform.rect)
+        self.screen.fill((100, 110, 110))
+        self.screen.blit(self.player.surf, self.player.rect)
+        self.screen.blit(self.platform.surf, self.platform.rect)
         pygame.display.flip()
 
 
