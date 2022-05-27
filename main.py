@@ -11,8 +11,8 @@ class Player(pygame.sprite.Sprite):
         self.vel = [0, 0]
         self.on_ground = True
 
-    def update(self, space, screen):
-        if self.ground_collision_detector == True:
+    def update(self, space, screen, platform_group):
+        if self.ground_collision_detector(platform_group):
             self.on_ground = True
         else:
             self.on_ground = False
