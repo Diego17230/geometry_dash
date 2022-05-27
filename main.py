@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
             self.vel[1] = 0
 
         if not self.on_ground:
-            self.vel[1] += .3
+            self.vel[1] += .5
 
         self.move()
 
