@@ -39,6 +39,13 @@ class Player(pygame.sprite.Sprite):
         return False
 
 
+class Spike(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.surf = pygame.image.load("images/Spike.png")
+        self.rect = self.surf.get_rect(center=(x, y))
+
+
 class Platform(pygame.sprite.Sprite):
     def __init__(self, width, height, x, y):
         super().__init__()
@@ -61,6 +68,7 @@ class Game():
         self.platform = Platform(50, 20, 600, 250)
         self.ground = Platform(500, 200, 250, 400)
         self.platforms = pygame.sprite.Group(self.platform, self.ground)
+        self.spikes = pygame.sprite.Group(Spike(250, 292))
 
         while self.running:
             self.update()
@@ -88,6 +96,8 @@ class Game():
         self.screen.blit(self.player.surf, self.player.rect)
         self.screen.blit(self.ground.surf, self.ground.rect)
         self.screen.blit(self.platform.surf, self.platform.rect)
+        for spike in self.spikes:
+            self.screen.blit(spike.surf, spike.rect)
         pygame.display.flip()
 
 
