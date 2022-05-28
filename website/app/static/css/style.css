@@ -5,6 +5,11 @@
     color: rgb(220, 220, 220);
 }
 
+::selection {
+    color: forestgreen;
+    background: lightgreen;
+}
+
 body {
     background: #333;
 }
@@ -44,6 +49,13 @@ p {
     display: flex;
     align-items: center;
     height: 70px;
+}
+#navbar * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
 }
 #navbar-logo {
     font-size: 40px;
