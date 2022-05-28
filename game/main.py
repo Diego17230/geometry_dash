@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
 
     def ground_collision_detector(self, platform_group):
         for platform in platform_group:
-            if abs(self.rect.bottom-platform.rect.top) in range(1, 15):
+            if platform.rect.colliderect(self.rect):
                 return True
         return False
 
@@ -60,6 +60,7 @@ class Game():
         self.space = False
         self.platform = Platform(50, 20, 600, 250)
         self.ground = Platform(500, 200, 250, 400)
+        self.platforms = pygame.sprite.Group(self.platform, self.ground)
 
         while self.running:
             self.update()
@@ -76,7 +77,7 @@ class Game():
             elif event.type == QUIT:
                 self.running = False
 
-        self.player.update(self.space, self.screen)
+        self.player.update(self.space, self.screen, self.platforms)
         self.space = False
 
         self.screen.fill((100, 110, 110))
