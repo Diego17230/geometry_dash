@@ -1,0 +1,85 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Courier';
+    color: rgb(220, 220, 220);
+}
+
+body {
+    background: #333;
+}
+
+p {
+    padding-left: 20px;
+    animation: appear 0s 3s forwards;
+    visibility: hidden;
+}
+@keyframes appear {
+  to { visibility: visible; }
+}
+
+#main-header {
+    color: green;
+    padding: 10px;
+    overflow: hidden;
+    padding-top: 2em;
+    padding-bottom: 2.3em;
+    border-right: .15em solid orange;
+    white-space: nowrap;
+    letter-spacing: .10em;
+    animation: 
+        typing 6s steps(40, end),
+        blink-caret .75s step-end infinite;
+}
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+}
+
+#navbar {
+    background-color: rgb(10, 10, 10);
+    display: flex;
+    align-items: center;
+    height: 70px;
+}
+#navbar-logo {
+    font-size: 40px;
+    text-decoration: none;
+    color: springgreen;
+}
+#navbar-list li {
+    display: inline;
+    padding-left: 1em;
+}
+#github-link {
+    font-size: 20px;
+    background-color: rgb(73, 73, 73);
+    padding: 4px;
+    text-decoration: none;
+    color: white;
+    border: 1px solid black;
+    border-radius: 13%;
+    position: relative;
+    top: -4px;
+    position: relative;
+    left: 70%;
+    font-family: Verdana;
+}
+
+.select {
+    font-size: 30px;
+    color: lightgreen;
+    text-decoration: none;
+}
+.select:hover {
+    color: springgreen;
+    animation: blinker 0.7s linear infinite;
+}
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
