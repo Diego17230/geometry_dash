@@ -1,60 +1,60 @@
 * {
-    margin: 0px;
-    padding: 0px;
-    font-family: 'Courier';
-    color: rgb(220, 220, 220);
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Courier';
+  color: rgb(220, 220, 220);
 }
 
 ::selection {
-    color: forestgreen;
-    background: lightgreen;
+  color: forestgreen;
+  background: lightgreen;
 }
 
 body {
-    background: #333;
+  background: #333;
 }
 
 img {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 p {
-    padding-left: 20px;
-    animation: appear 0s 3s forwards;
-    visibility: hidden;
+  padding-left: 20px;
+  animation: appear 0s 3s forwards;
+  visibility: hidden;
 }
 @keyframes appear {
-    to { visibility: visible; }
+  to { visibility: visible; }
 }
 p a {
-    color: lightseagreen;
+  color: lightseagreen;
 }
 p a:hover {
-    color: springgreen;
-    animation: float 1.5s linear infinite;
-    position: relative;
+  color: springgreen;
+  animation: float 1.5s linear infinite;
+  position: relative;
 }
 @keyframes float {
-    0%, 100% { top: 0; }
-    25% { top: -3px; }
-    75% { top: 3px; }
+  0%, 100% { top: 0; }
+  25% { top: -3px; }
+  75% { top: 3px; }
 }
 
 #main-header {
-    color: green;
-    padding: 10px;
-    overflow: hidden;
-    padding-top: 2em;
-    padding-bottom: 2.3em;
-    border-right: .15em solid orange;
-    white-space: nowrap;
-    letter-spacing: .10em;
-    animation:
-        typing 3s steps(40, end),
-        blink-caret .75s step-end infinite;
+  color: green;
+  padding: 10px;
+  overflow: hidden;
+  padding-top: 2em;
+  padding-bottom: 2.3em;
+  border-right: .15em solid orange;
+  white-space: nowrap;
+  letter-spacing: .10em;
+  animation:
+    typing 6s steps(40, end),
+    blink-caret .75s step-end infinite;
 }
 @keyframes typing {
   from { width: 0 }
@@ -65,72 +65,72 @@ p a:hover {
 }
 
 #navbar {
-    background-color: rgb(10, 10, 10);
-    display: flex;
-    align-items: center;
-    height: 70px;
+  background-color: rgb(10, 10, 10);
+  display: flex;
+  align-items: center;
+  height: 70px;
 }
 #navbar * {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 #navbar-logo {
-    font-size: 40px;
-    text-decoration: none;
-    color: springgreen;
+  font-size: 40px;
+  text-decoration: none;
+  color: springgreen;
 }
 #navbar-list li {
-    display: inline;
-    padding-left: 1em;
+  display: inline;
+  padding-left: 1em;
 }
 #github-link {
-    font-size: 20px;
-    background-color: rgb(73, 73, 73);
-    padding: 4px;
-    text-decoration: none;
-    color: white;
-    border: 1px solid black;
-    border-radius: 13%;
-    position: relative;
-    top: -4px;
-    position: relative;
-    left: 70%;
-    font-family: Verdana;
+  font-size: 20px;
+  background-color: rgb(73, 73, 73);
+  padding: 4px;
+  text-decoration: none;
+  color: white;
+  border: 1px solid black;
+  border-radius: 13%;
+  position: relative;
+  top: -4px;
+  position: relative;
+  left: 70%;
+  font-family: Verdana;
 }
 
 .select {
-    font-size: 30px;
-    color: lightgreen;
-    text-decoration: none;
+  font-size: 30px;
+  color: lightgreen;
+  text-decoration: none;
 }
 .select:hover {
-    color: springgreen;
-    animation: blinker 0.7s linear infinite;
+  color: springgreen;
+  animation: blinker 0.7s linear infinite;
 }
 @keyframes blinker {
-    50% { opacity: 0.15; }
+  50% { opacity: 0.15; }
 }
 
 .container {
-    padding-top: 3em;
-    padding-left: 20px;
+  padding-top: 3em;
+  padding-left: 20px;
 }
 #geodash-gif {
-    visibility: hidden;
-    animation: appear 0s 3s forwards;
-    border: solid green 3px;
+  visibility: hidden;
+  animation: appear 0s 3s forwards;
+  border: solid green 3px;
 }
 #geodash-gif {
-    color: white;
+  color: white;
 }
 #gif-subtitle {
-    color: slategrey;
-    padding-left: 390px;
+  color: slategrey;
+  padding-left: 390px;
 }
 #geodash-gif:hover ~ #gif-subtitle {
-    color: white;
-    position: relative;
-    top: -3px;
+  color: white;
+  position: relative;
+  top: -3px;
 }
