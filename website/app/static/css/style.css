@@ -14,13 +14,20 @@ body {
     background: #333;
 }
 
+img {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 p {
     padding-left: 20px;
     animation: appear 0s 3s forwards;
     visibility: hidden;
 }
 @keyframes appear {
-  to { visibility: visible; }
+    to { visibility: visible; }
 }
 p a {
     color: lightseagreen;
@@ -31,15 +38,9 @@ p a:hover {
     position: relative;
 }
 @keyframes float {
-    0%, 100% {
-        top: 0;
-    }
-    25% {
-        top: -3px;
-    }
-    75% {
-        top: 3px;
-    }
+    0%, 100% { top: 0; }
+    25% { top: -3px; }
+    75% { top: 3px; }
 }
 
 #main-header {
@@ -74,7 +75,6 @@ p a:hover {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
 }
 #navbar-logo {
     font-size: 40px;
@@ -110,7 +110,27 @@ p a:hover {
     animation: blinker 0.7s linear infinite;
 }
 @keyframes blinker {
-    50% {
-        opacity: 0;
-    }
+    50% { opacity: 0.15; }
+}
+
+.container {
+    padding-top: 3em;
+    padding-left: 20px;
+}
+#geodash-gif {
+    visibility: hidden;
+    animation: appear 0s 3s forwards;
+    border: solid green 3px;
+}
+#geodash-gif {
+    color: white;
+}
+#gif-subtitle {
+    color: slategrey;
+    padding-left: 390px;
+}
+#geodash-gif:hover ~ #gif-subtitle {
+    color: white;
+    position: relative;
+    top: -3px;
 }
