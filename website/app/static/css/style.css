@@ -52,8 +52,8 @@ p a:hover {
     border-right: .15em solid orange;
     white-space: nowrap;
     letter-spacing: .10em;
-    animation: 
-        typing 6s steps(40, end),
+    animation:
+        typing 3s steps(40, end),
         blink-caret .75s step-end infinite;
 }
 @keyframes typing {
