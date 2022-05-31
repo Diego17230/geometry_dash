@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from pygame.locals import *
 
@@ -60,6 +62,8 @@ class Spike(pygame.sprite.Sprite):
         self.surf = pygame.image.load("images/Spike.png")
         self.rect = self.surf.get_rect(center=(x, y))
 
+    def update(self, dt):
+        self.rect.move_ip(-0.175 * dt, 0)
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, width, height, x, y):
@@ -80,16 +84,32 @@ class Game():
         self.screen = pygame.display.set_mode((500, 500))
         self.player = Player()
         self.space = False
-        self.platform = Platform(50, 20, 600, 250)
         self.ground = Platform(500, 200, 250, 400)
-        self.platforms = pygame.sprite.Group(self.platform, self.ground)
-        self.spikes = pygame.sprite.Group(Spike(250, 292))
+        self.platforms = pygame.sprite.Group(self.ground)
+        self.all_sprites = pygame.sprite.Group(self.player, self.ground)
+        self.spikes = pygame.sprite.Group()
+        self.max_time = 60
+        self.platform_delay = self.max_time
+        self.spike_delay = random.randint(60, 120)
 
         while self.running:
             self.update()
 
     def update(self):
         dt = self.clock.tick(30)
+
+        self.platform_delay -= 1
+        self.spike_delay -= 1
+
+        if self.platform_delay <= 0:
+            Platform(50, 10, 500, 250).add(self.platforms,
+                                           self.all_sprites)
+            self.platform_delay = random.randint(60, 120)
+
+        if self.spike_delay <= 0:
+            Spike(500, 290).add(self.spikes,
+                                           self.all_sprites)
+            self.spike_delay = random.randint(60, 120)
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -105,14 +125,18 @@ class Game():
 
         self.screen.fill((100, 110, 110))
         self.screen.blit(self.player.surf, self.player.rect)
-        self.platform.update(dt)
+        for platform in self.platforms:
+            if platform != self.ground:
+                platform.update(dt)
+
+        for spike in self.spikes:
+            spike.update(dt)
+            if spike.rect.colliderect(self.player.rect):
+                self.running = False
 
         self.screen.fill((100, 110, 110))
-        self.screen.blit(self.player.surf, self.player.rect)
-        self.screen.blit(self.ground.surf, self.ground.rect)
-        self.screen.blit(self.platform.surf, self.platform.rect)
-        for spike in self.spikes:
-            self.screen.blit(spike.surf, spike.rect)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.surf, sprite.rect)
         pygame.display.flip()
 
 
