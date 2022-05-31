@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = True
 
     def update(self, space, screen, platform_group):
+        self.space = space
         # Checks for collisions
         collision = self.ground_collision_detector(platform_group)
         if collision:
@@ -23,11 +24,11 @@ class Player(pygame.sprite.Sprite):
             self.on_ground = False
 
         # Jumping
-        if space and self.on_ground:
+        if self.space and self.on_ground:
             self.jump()
 
         # On ground
-        if self.on_ground and not space:
+        if self.on_ground and not self.space:
             self.vel[1] = 0
 
         # Gravity
