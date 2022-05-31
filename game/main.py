@@ -76,6 +76,7 @@ class Spike(pygame.sprite.Sprite):
     def update(self, dt):
         self.rect.move_ip(-0.175 * dt, 0)
 
+
 class Platform(pygame.sprite.Sprite):
     def __init__(self, width, height, x, y):
         super().__init__()
