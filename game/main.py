@@ -46,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         for platform in platform_group:
             if platform.rect.colliderect(self.rect):
                 if abs(self.rect.bottom - platform.rect.top) in range(1, 15):
+                    self.rect.bottom = platform.rect.top + 1
                     return platform
                 if abs(self.rect.top - platform.rect.bottom) in range(1, 15):
                     self.kill()
@@ -76,7 +77,7 @@ class Platform(pygame.sprite.Sprite):
         self.rect.move_ip(-0.175 * dt, 0)
 
 
-class Game():
+class Game:
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.running = True
