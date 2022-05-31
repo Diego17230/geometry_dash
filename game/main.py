@@ -5,6 +5,7 @@ from pygame.locals import *
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        # Player Setup
         self.surf = pygame.Surface((20, 20))
         self.rect = self.surf.get_rect(center=(250, 250))
         self.surf.fill((0, 255, 0))
@@ -12,31 +13,44 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = True
 
     def update(self, space, screen, platform_group):
+        # Checks for collisions
         collision = self.ground_collision_detector(platform_group)
         if collision:
             self.on_ground = True
         else:
             self.on_ground = False
 
+        # Jumping
         if space and self.on_ground:
             self.vel[1] = -10
             self.on_ground = False
 
+        # On ground
         if self.on_ground and not space:
             self.vel[1] = 0
 
+        # Gravity
         if not self.on_ground and self.vel[1] < 10:
             self.vel[1] += .5
 
         self.move()
 
+    # Move function
     def move(self):
         self.rect.move_ip(*self.vel)
 
+    # Collision detector
     def ground_collision_detector(self, platform_group):
         for platform in platform_group:
-            if platform.rect.colliderect(self.rect) and abs(self.rect.bottom - platform.rect.top) in range(1, 15):
-                return platform
+            if platform.rect.colliderect(self.rect):
+                if abs(self.rect.bottom - platform.rect.top) in range(1, 15):
+                    return platform
+                if abs(self.rect.top - platform.rect.bottom) in range(1, 15):
+                    self.kill()
+                    print("You died get good")
+                if abs(self.rect.right - platform.rect.left) in range(1, 15):
+                    self.kill()
+                    print("You died get good")
         return False
 
 
