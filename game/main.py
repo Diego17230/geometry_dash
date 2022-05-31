@@ -13,6 +13,9 @@ class Player(pygame.sprite.Sprite):
         self.surf.fill((0, 255, 0))
         self.vel = [0, 0]
         self.on_ground = True
+        self.hit_box = pygame.Surface((20, 20))
+        self.spike_check = self.hit_box.get_rect(center=(275, 290))
+        self.hit_box.fill((255, 0, 255))
 
     def update(self, space, screen, platform_group):
         self.space = space
@@ -139,12 +142,18 @@ class Game:
 
         for spike in self.spikes:
             spike.update(dt)
+            if spike.rect.colliderect(self.player.spike_check):
+                print("hit")
+                self.player.jump()
+
             if spike.rect.colliderect(self.player.rect):
-                self.running = False
+                self.player.jump()
 
         self.screen.fill((100, 110, 110))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+        self.screen.blit(self.player.hit_box, self.player.spike_check)
         pygame.display.flip()
 
 
