@@ -109,7 +109,7 @@ class Game:
             self.update()
 
     def check_distance(self, obj1, obj2):
-        return obj2.rect.x - obj1.rect.x, obj2.rect.y - obj1.rect.y
+        return obj2.rect.right - obj1.rect.left, obj2.rect.right - obj1.rect.left
 
     def update(self):
         dt = self.clock.tick(30)
@@ -120,17 +120,19 @@ class Game:
             self.space = True
 
         self.jump_timer -= 1
-        print(len(self.incoming_obstacles))
 
         if len(self.incoming_obstacles) >= 2:
             obstacle1 = self.incoming_obstacles[0]
             obstacle2 = self.incoming_obstacles[1]
 
-            if self.check_distance(obstacle1, obstacle2)[0] > 25:
+            if self.check_distance(obstacle1, obstacle2)[0] > 80:
                 if isinstance(obstacle1, Spike) and \
                         self.check_distance(self.player, obstacle1)[0] < 100:
                     self.space = True
-            elif self.check_distance(self.player, obstacle1)[0] < 20:
+
+            if self.check_distance(self.player, obstacle1)[0] < 75 and \
+                    self.check_distance(obstacle1, obstacle2)[0] < 80:
+                print("DETECTED")
                 self.space = True
 
             self.incoming_obstacles.remove(obstacle1)
@@ -146,12 +148,12 @@ class Game:
         if self.platform_delay <= 0:
             Platform(50, 10, 500, 250).add(self.platforms,
                                            self.all_sprites)
-            self.platform_delay = random.randint(60, 120)
+            self.platform_delay = random.randint(60, 70)
 
         if self.spike_delay <= 0:
             Spike(500, 290).add(self.spikes,
                                            self.all_sprites)
-            self.spike_delay = random.randint(60, 120)
+            self.spike_delay = random.randint(60, 70)
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
