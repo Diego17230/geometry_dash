@@ -108,6 +108,9 @@ class Game:
         while self.running:
             self.update()
 
+    def check_distance(self, obj1, obj2):
+        return obj2.rect.x - obj1.rect.x, obj1.rect.y - obj2.rect.y
+
     def update(self):
         dt = self.clock.tick(30)
 
