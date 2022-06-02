@@ -15,4 +15,4 @@ def download():
 
 @app.route('/watch')
 def watch():
-    return render_template('download.html', title='Download')
+    return render_template('watch.html', title='Watch')
