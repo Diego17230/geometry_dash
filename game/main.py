@@ -50,7 +50,7 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = False
 
     def gravity(self):
-        self.vel[1] += .5
+        self.vel[1] += .7
 
     # Collision detector
     def ground_collision_detector(self, platform_group):
@@ -76,6 +76,7 @@ class Spike(pygame.sprite.Sprite):
 
     def update(self, dt):
         self.rect.move_ip(-0.175 * dt, 0)
+
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, width, height, x, y):
