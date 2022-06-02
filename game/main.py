@@ -13,9 +13,10 @@ class Player(pygame.sprite.Sprite):
         self.surf.fill((0, 255, 0))
         self.vel = [0, 0]
         self.on_ground = True
-        self.hit_box = pygame.Surface((20, 20))
-        self.spike_check = self.hit_box.get_rect(center=(275, 290))
-        self.hit_box.fill((255, 0, 255))
+        self.spike_hit_box = pygame.Surface((25, 500))
+        self.platform_hit_box = pygame.Surface((25, 500))
+        self.spike_check = self.spike_hit_box.get_rect(center=(270, 290))
+        self.platform_check = self.platform_hit_box.get_rect(center=(300, 290))
 
     def update(self, space, screen, platform_group):
         self.space = space
@@ -101,7 +102,7 @@ class Game:
         self.spikes = pygame.sprite.Group()
         self.max_time = 60
         self.platform_delay = self.max_time
-        self.spike_delay = random.randint(60, 120)
+        self.spike_delay = random.randint(20, 60)
 
         while self.running:
             self.update()
@@ -115,12 +116,12 @@ class Game:
         if self.platform_delay <= 0:
             Platform(50, 10, 500, 250).add(self.platforms,
                                            self.all_sprites)
-            self.platform_delay = random.randint(60, 120)
+            self.platform_delay = random.randint(20, 60)
 
         if self.spike_delay <= 0:
             Spike(500, 290).add(self.spikes,
                                            self.all_sprites)
-            self.spike_delay = random.randint(60, 120)
+            self.spike_delay = random.randint(20, 60)
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -140,11 +141,13 @@ class Game:
             if platform != self.ground:
                 platform.update(dt)
 
+                if platform.rect.colliderect(self.player.platform_check):
+                    self.space = True
+
         for spike in self.spikes:
             spike.update(dt)
             if spike.rect.colliderect(self.player.spike_check):
-                print("hit")
-                self.player.jump()
+                self.space = True
 
             if spike.rect.colliderect(self.player.rect):
                 self.player.jump()
@@ -152,8 +155,6 @@ class Game:
         self.screen.fill((100, 110, 110))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
-
-        self.screen.blit(self.player.hit_box, self.player.spike_check)
         pygame.display.flip()
 
 
