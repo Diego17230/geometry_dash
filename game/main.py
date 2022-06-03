@@ -13,10 +13,13 @@ class Player(pygame.sprite.Sprite):
         self.surf.fill((0, 255, 0))
         self.vel = [0, 0]
         self.on_ground = True
+        # Player has an obstacle hitbox that will detect incoming obstacles
+        # This is used for the AI
         self.obstacle_hit_box = pygame.Surface((250, 500))
         self.obstacle_check = self.obstacle_hit_box.get_rect(center=(375, 290))
 
     def update(self, space, screen, platform_group):
+        # Sets space (Jump) to whatever was inputted in the update function
         self.space = space
         # Checks for collisions
         collision = self.ground_collision_detector(platform_group)
@@ -68,22 +71,33 @@ class Player(pygame.sprite.Sprite):
 
 class Spike(pygame.sprite.Sprite):
     def __init__(self, x, y):
+        # Initilizes sprite class
         super().__init__()
+        # Sets image of the sprite
         self.surf = pygame.image.load("images/Spike.png")
+        # Sets the rect (hitbox) and coordinates of where it should be located
+        # using the x and y inputted when creating the object
         self.rect = self.surf.get_rect(center=(x, y))
 
     def update(self, dt):
+        # Moves the spike towards the player
+        # (since the player doesn't actually move)
         self.rect.move_ip(-0.175 * dt, 0)
 
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, width, height, x, y):
         super().__init__()
+        # Sets width and height using parameter values
         self.surf = pygame.Surface((width, height))
+        # Sets hitbox and location
         self.rect = self.surf.get_rect(center=(x, y))
+        # Sets the color of the platform to grey using RGB scale
         self.surf.fill((255, 255, 0))
 
     def update(self, dt):
+        # Moves the platform towards the player
+        # Moves at a constant rate by multiplying it by delta time
         self.rect.move_ip(-0.175 * dt, 0)
 
 
@@ -112,25 +126,29 @@ class Game:
         return obj2.rect.right - obj1.rect.left, obj2.rect.right - obj1.rect.left
 
     def update(self):
+        # Sets delta time to the clock tick (will help catch up if application lags)
         dt = self.clock.tick(30)
 
-        """temp"""
-
+        # Jump timer (used for a delay in jump when the AI needs to do so)
         if self.jump_timer == 0:
             self.space = True
-
         self.jump_timer -= 1
 
+        # Checks if there are two or more obstacles coming towards the player
         if len(self.incoming_obstacles) >= 2:
+            # Gets the first two obstacles
             obstacle1 = self.incoming_obstacles[0]
             obstacle2 = self.incoming_obstacles[1]
 
+            """Checks if the x distance between the first and second obstacle
+            is greater than 80 pixels (meaning the objects are too far away
+            to be jumped over using only one jump) Also checks if the player is
+            close enough to the first object to jump"""
             if self.check_distance(obstacle1, obstacle2)[0] > 80:
                 if isinstance(obstacle1, Spike) and \
-                        self.check_distance(self.player, obstacle1)[0] < 100:
+                        self.check_distance(self.player, obstacle1)[0] < 120:
                     self.space = True
-
-            if self.check_distance(self.player, obstacle1)[0] < 75 and \
+            elif self.check_distance(self.player, obstacle1)[0] < 80 and \
                     self.check_distance(obstacle1, obstacle2)[0] < 80:
                 print("DETECTED")
                 self.space = True
@@ -138,7 +156,7 @@ class Game:
             self.incoming_obstacles.remove(obstacle1)
         elif len(self.incoming_obstacles) == 1:
             obstacle1 = self.incoming_obstacles[0]
-            if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 100:
+            if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 120:
                 self.space = True
             self.incoming_obstacles.remove(obstacle1)
 
