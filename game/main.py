@@ -15,7 +15,6 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = True
         self.platform_check = pygame.Surface((20, 40))
         self.platform_hitbox = self.platform_check.get_rect(center=(self.rect.centerx, self.rect.centery - 30))
-        self.platform_check.fill((255, 255, 0))
         # Player has an obstacle hitbox that will detect incoming obstacles
         # This is used for the AI
 
@@ -219,7 +218,6 @@ class Game:
         self.screen.fill((100, 110, 110))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
-        self.screen.blit(self.player.platform_check, self.player.platform_hitbox)
         pygame.display.flip()
 
 
