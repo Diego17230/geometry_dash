@@ -8,9 +8,9 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # Player Setup
-        self.surf = pygame.Surface((20, 20))
+        self.surf = pygame.image.load("images/sprite.png").convert_alpha()
+        self.surf = pygame.transform.scale(self.surf, (20, 20))
         self.rect = self.surf.get_rect(center=(250, 250))
-        self.surf.fill((0, 255, 0))
         self.vel = [0, 0]
         self.on_ground = True
         self.platform_check = pygame.Surface((20, 40))
@@ -74,7 +74,7 @@ class Spike(pygame.sprite.Sprite):
         # Initilizes sprite class
         super().__init__()
         # Sets image of the sprite
-        self.surf = pygame.image.load("images/Spike.png")
+        self.surf = pygame.image.load("images/spike.png")
         # Sets the rect (hitbox) and coordinates of where it should be located
         # using the x and y inputted when creating the object
         self.rect = self.surf.get_rect(center=(x, y))
@@ -89,11 +89,11 @@ class Platform(pygame.sprite.Sprite):
     def __init__(self, width, height, x, y):
         super().__init__()
         # Sets width and height using parameter values
-        self.surf = pygame.Surface((width, height))
+        self.surf = pygame.image.load("images/platform.png").convert_alpha()
+        self.surf = pygame.transform.scale(self.surf, (width, height))
         # Sets hitbox and location
         self.rect = self.surf.get_rect(center=(x, y))
         # Sets the color of the platform to grey using RGB scale
-        self.surf.fill((255, 255, 0))
 
     def update(self, dt):
         # Moves the platform towards the player
