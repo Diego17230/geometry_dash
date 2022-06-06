@@ -107,7 +107,7 @@ class Game:
         self.screen = pygame.display.set_mode((500, 500))
         self.player = Player()
         self.space = False
-        self.ground = Platform(500, 200, 250, 400)
+        self.ground = Platform(500, 20, 250, 310)
         self.platforms = pygame.sprite.Group(self.ground)
         self.all_sprites = pygame.sprite.Group(self.player, self.ground)
         self.spikes = pygame.sprite.Group()
@@ -179,7 +179,7 @@ class Game:
 
         if self.spike_delay <= 0:
             spike = Spike(500, 290)
-            spike.add(self.spikes,self.all_sprites)
+            spike.add(self.spikes, self.all_sprites)
             self.incoming_obstacles.append(spike)
             self.spike_delay = random.randint(60, 75)
 
@@ -205,10 +205,9 @@ class Game:
         self.player.update(self.space, self.screen, self.platforms)
         self.space = False
 
-        self.screen.fill((100, 110, 110))
+        self.screen.fill((0, 0, 0))
         self.screen.blit(self.player.surf, self.player.rect)
 
-        self.screen.fill((100, 110, 110))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
         pygame.display.flip()
