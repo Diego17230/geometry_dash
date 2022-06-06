@@ -13,6 +13,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=(250, 250))
         self.vel = [0, 0]
         self.on_ground = True
+        self.platform_check = pygame.Surface((20, 40))
+        self.platform_hitbox = self.platform_check.get_rect(center=(self.rect.centerx, self.rect.centery - 30))
         # Player has an obstacle hitbox that will detect incoming obstacles
         # This is used for the AI
 
@@ -39,6 +41,7 @@ class Player(pygame.sprite.Sprite):
             self.gravity()
 
         self.move()
+        self.platform_hitbox.centery = self.rect.centery - 30
 
     # Move function
     def move(self):
@@ -60,10 +63,8 @@ class Player(pygame.sprite.Sprite):
                     return platform
                 if abs(self.rect.top - platform.rect.bottom) in range(1, 15):
                     self.kill()
-                    print("You died get good")
                 if abs(self.rect.right - platform.rect.left) in range(1, 15):
                     self.kill()
-                    print("You died get good")
         return False
 
 
@@ -111,9 +112,8 @@ class Game:
         self.platforms = pygame.sprite.Group(self.ground)
         self.all_sprites = pygame.sprite.Group(self.player, self.ground)
         self.spikes = pygame.sprite.Group()
-        self.max_time = 60
-        self.platform_delay = self.max_time
-        self.spike_delay = random.randint(20, 60)
+        self.platform_delay = 45
+        self.spike_delay = 60
         self.incoming_obstacles = []
         self.jump_timer = -1
 
@@ -142,19 +142,26 @@ class Game:
             is greater than 80 pixels (meaning the objects are too far away
             to be jumped over using only one jump) Also checks if the player is
             close enough to the first object to jump"""
-            if self.check_distance(obstacle1, obstacle2)[0] > 80:
+            if self.check_distance(obstacle1, obstacle2)[0] >= 75:
                 if isinstance(obstacle1, Spike) and \
-                        self.check_distance(self.player, obstacle1)[0] < 100:
+                        self.check_distance(self.player, obstacle1)[0] < 100\
+                        and not self.player.platform_hitbox.colliderect(obstacle2.rect):
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                 elif isinstance(obstacle1, Platform) and \
-                        self.check_distance(self.player, obstacle1)[0] < 100:
+                        self.check_distance(obstacle1, self.player)[0] > 5:
                     self.incoming_obstacles.remove(obstacle1)
-            elif self.check_distance(obstacle1, obstacle2)[0] < 80:
-                if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 80:
-                    self.space = True
-                    self.incoming_obstacles.remove(obstacle1)
-                    self.incoming_obstacles.remove(obstacle2)
+            elif self.check_distance(obstacle1, obstacle2)[0] < 75:
+                if isinstance(obstacle1, Spike):
+                    if self.check_distance(obstacle1, obstacle2)[0] > 40:
+                        if self.check_distance(self.player, obstacle1)[0] < 40:
+                            self.space = True
+                            self.incoming_obstacles.remove(obstacle1)
+                            self.incoming_obstacles.remove(obstacle2)
+                    elif self.check_distance(self.player, obstacle1)[0] < 80:
+                        self.space = True
+                        self.incoming_obstacles.remove(obstacle1)
+                        self.incoming_obstacles.remove(obstacle2)
                 elif isinstance(obstacle1, Platform) and self.check_distance(self.player, obstacle1)[0] < 120:
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
@@ -164,7 +171,7 @@ class Game:
             if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 100:
                 self.space = True
                 self.incoming_obstacles.remove(obstacle1)
-            elif isinstance(obstacle1, Platform) and self.check_distance(self.player, obstacle1)[0] < 100:
+            elif isinstance(obstacle1, Platform) and self.check_distance(obstacle1, self.player)[0] > -25:
                 self.incoming_obstacles.remove(obstacle1)
 
         self.platform_delay -= 1
@@ -175,13 +182,13 @@ class Game:
 
             platform.add(self.platforms, self.all_sprites)
             self.incoming_obstacles.append(platform)
-            self.platform_delay = random.randint(60, 75)
+            self.platform_delay = 60
 
         if self.spike_delay <= 0:
             spike = Spike(500, 290)
             spike.add(self.spikes, self.all_sprites)
             self.incoming_obstacles.append(spike)
-            self.spike_delay = random.randint(60, 75)
+            self.spike_delay = 61
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -200,7 +207,7 @@ class Game:
             spike.update(dt)
 
             if spike.rect.colliderect(self.player.rect):
-                self.player.jump()
+                self.running = False
 
         self.player.update(self.space, self.screen, self.platforms)
         self.space = False
