@@ -15,8 +15,6 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = True
         # Player has an obstacle hitbox that will detect incoming obstacles
         # This is used for the AI
-        self.obstacle_hit_box = pygame.Surface((250, 500))
-        self.obstacle_check = self.obstacle_hit_box.get_rect(center=(375, 290))
 
     def update(self, space, screen, platform_group):
         # Sets space (Jump) to whatever was inputted in the update function
@@ -60,12 +58,12 @@ class Player(pygame.sprite.Sprite):
                 if abs(self.rect.bottom - platform.rect.top) in range(1, 15):
                     self.rect.bottom = platform.rect.top + 1
                     return platform
-                """if abs(self.rect.top - platform.rect.bottom) in range(1, 15):
+                if abs(self.rect.top - platform.rect.bottom) in range(1, 15):
                     self.kill()
                     print("You died get good")
                 if abs(self.rect.right - platform.rect.left) in range(1, 15):
                     self.kill()
-                    print("You died get good")"""
+                    print("You died get good")
         return False
 
 
@@ -123,7 +121,7 @@ class Game:
             self.update()
 
     def check_distance(self, obj1, obj2):
-        return obj2.rect.right - obj1.rect.left, obj2.rect.right - obj1.rect.left
+        return obj2.rect.centerx - obj1.rect.centerx, obj2.rect.y - obj1.rect.y
 
     def update(self):
         # Sets delta time to the clock tick (will help catch up if application lags)
@@ -146,32 +144,44 @@ class Game:
             close enough to the first object to jump"""
             if self.check_distance(obstacle1, obstacle2)[0] > 80:
                 if isinstance(obstacle1, Spike) and \
-                        self.check_distance(self.player, obstacle1)[0] < 120:
+                        self.check_distance(self.player, obstacle1)[0] < 100:
                     self.space = True
-            elif self.check_distance(self.player, obstacle1)[0] < 80 and \
-                    self.check_distance(obstacle1, obstacle2)[0] < 80:
-                print("DETECTED")
-                self.space = True
-
-            self.incoming_obstacles.remove(obstacle1)
+                    self.incoming_obstacles.remove(obstacle1)
+                elif isinstance(obstacle1, Platform) and \
+                        self.check_distance(self.player, obstacle1)[0] < 100:
+                    self.incoming_obstacles.remove(obstacle1)
+            elif self.check_distance(obstacle1, obstacle2)[0] < 80:
+                if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 80:
+                    self.space = True
+                    self.incoming_obstacles.remove(obstacle1)
+                    self.incoming_obstacles.remove(obstacle2)
+                elif isinstance(obstacle1, Platform) and self.check_distance(self.player, obstacle1)[0] < 120:
+                    self.space = True
+                    self.incoming_obstacles.remove(obstacle1)
+                    self.incoming_obstacles.remove(obstacle2)
         elif len(self.incoming_obstacles) == 1:
             obstacle1 = self.incoming_obstacles[0]
-            if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 120:
+            if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 100:
                 self.space = True
-            self.incoming_obstacles.remove(obstacle1)
+                self.incoming_obstacles.remove(obstacle1)
+            elif isinstance(obstacle1, Platform) and self.check_distance(self.player, obstacle1)[0] < 100:
+                self.incoming_obstacles.remove(obstacle1)
 
         self.platform_delay -= 1
         self.spike_delay -= 1
 
         if self.platform_delay <= 0:
-            Platform(50, 10, 500, 250).add(self.platforms,
-                                           self.all_sprites)
-            self.platform_delay = random.randint(60, 70)
+            platform = Platform(50, 10, 500, 250)
+
+            platform.add(self.platforms, self.all_sprites)
+            self.incoming_obstacles.append(platform)
+            self.platform_delay = random.randint(60, 75)
 
         if self.spike_delay <= 0:
-            Spike(500, 290).add(self.spikes,
-                                           self.all_sprites)
-            self.spike_delay = random.randint(60, 70)
+            spike = Spike(500, 290)
+            spike.add(self.spikes,self.all_sprites)
+            self.incoming_obstacles.append(spike)
+            self.spike_delay = random.randint(60, 75)
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -182,27 +192,21 @@ class Game:
             elif event.type == QUIT:
                 self.running = False
 
+        for platform in self.platforms:
+            if platform != self.ground:
+                platform.update(dt)
+
+        for spike in self.spikes:
+            spike.update(dt)
+
+            if spike.rect.colliderect(self.player.rect):
+                self.player.jump()
+
         self.player.update(self.space, self.screen, self.platforms)
         self.space = False
 
         self.screen.fill((100, 110, 110))
         self.screen.blit(self.player.surf, self.player.rect)
-        for platform in self.platforms:
-            if platform != self.ground:
-                platform.update(dt)
-
-                if platform.rect.colliderect(self.player.obstacle_check) and \
-                        platform not in self.incoming_obstacles:
-                    self.incoming_obstacles.append(platform)
-
-        for spike in self.spikes:
-            spike.update(dt)
-            if spike.rect.colliderect(self.player.obstacle_check) and \
-                    spike not in self.incoming_obstacles:
-                self.incoming_obstacles.append(spike)
-
-            if spike.rect.colliderect(self.player.rect):
-                self.player.jump()
 
         self.screen.fill((100, 110, 110))
         for sprite in self.all_sprites:
