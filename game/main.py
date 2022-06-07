@@ -5,13 +5,13 @@ from pygame.locals import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         super().__init__()
         # Player Setup
         self.surf = pygame.image.load("images/sprite.png").convert_alpha()
         # Changes the 16x16 square image to 20x20 since that is the size we tested the AI with
         self.surf = pygame.transform.scale(self.surf, (20, 20))
-        self.rect = self.surf.get_rect(center=(250, 250))
+        self.rect = self.surf.get_rect(center=(x, y))
         # Sets x and y velocity to 0
         self.vel = [0, 0]
         self.on_ground = True
@@ -111,7 +111,8 @@ class Game:
         # Sets the screen
         self.screen = pygame.display.set_mode((500, 500))
         # Creates the player
-        self.player = Player()
+        self.AI = Player(200, 250)
+        self.player = Player(250, 250)
         # Initilizes the space variable (space = whether AI should jump or not)
         self.space = False
         # Creates the ground as a giant platform
@@ -119,7 +120,7 @@ class Game:
         # Adds the ground to the platforms group
         self.platforms = pygame.sprite.Group(self.ground)
         # Adds player and ground to all sprites group
-        self.all_sprites = pygame.sprite.Group(self.player, self.ground)
+        self.all_sprites = pygame.sprite.Group(self.player, self.AI, self.ground)
         # Creates spikes group
         self.spikes = pygame.sprite.Group()
 
@@ -154,12 +155,12 @@ class Game:
             close enough to the first object to jump"""
             if self.check_distance(obstacle1, obstacle2)[0] >= 75:
                 if isinstance(obstacle1, Spike) and \
-                        self.check_distance(self.player, obstacle1)[0] < 100\
-                        and not self.player.platform_hitbox.colliderect(obstacle2.rect):
+                        self.check_distance(self.AI, obstacle1)[0] < 100\
+                        and not self.AI.platform_hitbox.colliderect(obstacle2.rect):
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                 elif isinstance(obstacle1, Platform) and \
-                        self.check_distance(obstacle1, self.player)[0] > 5:
+                        self.check_distance(obstacle1, self.AI)[0] > 5:
                     """
                     Removes platform once it's slightly behind the player
                     so the platform dectector attached to the player
@@ -181,11 +182,11 @@ class Game:
                         (can't be an addon to the other if statement because
                         if this is false it will run the elif which is to
                         jump earlier)"""
-                        if self.check_distance(self.player, obstacle1)[0] < 40:
+                        if self.check_distance(self.AI, obstacle1)[0] < 40:
                             self.space = True
                             self.incoming_obstacles.remove(obstacle1)
                             self.incoming_obstacles.remove(obstacle2)
-                    elif self.check_distance(self.player, obstacle1)[0] < 80:
+                    elif self.check_distance(self.AI, obstacle1)[0] < 80:
                         self.space = True
                         self.incoming_obstacles.remove(obstacle1)
                         self.incoming_obstacles.remove(obstacle2)
@@ -193,7 +194,7 @@ class Game:
                 # jump earlier since the platform is wider and higher in the
                 # y position than a spike
                 # (The bot can fall off from the platform and still get over the spike as well)
-                elif isinstance(obstacle1, Platform) and self.check_distance(self.player, obstacle1)[0] < 120:
+                elif isinstance(obstacle1, Platform) and self.check_distance(self.AI, obstacle1)[0] < 120:
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                     self.incoming_obstacles.remove(obstacle2)
@@ -201,12 +202,12 @@ class Game:
         elif len(self.incoming_obstacles) == 1:
             obstacle1 = self.incoming_obstacles[0]
             # Jumps over a single spike at correct timing
-            if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 100:
+            if isinstance(obstacle1, Spike) and self.check_distance(self.AI, obstacle1)[0] < 100:
                 self.space = True
                 self.incoming_obstacles.remove(obstacle1)
             # Stays on ground and removes single platform from the incoming_obstacles
             # once it passes
-            elif isinstance(obstacle1, Platform) and self.check_distance(obstacle1, self.player)[0] > -25:
+            elif isinstance(obstacle1, Platform) and self.check_distance(obstacle1, self.AI)[0] > -25:
                 self.incoming_obstacles.remove(obstacle1)
 
         # Lowers the spike and platform delay by 1 every frame
@@ -227,11 +228,14 @@ class Game:
             self.incoming_obstacles.append(spike)
             self.spike_delay = 61
 
+        player_jump = False
         # Checks if player has clicked any keys to end the game
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE or event.type == QUIT:
                     self.running = False
+                if event.key == K_SPACE:
+                    player_jump = True
 
         # Updates every platform in the platform group (except the ground)
         for platform in self.platforms:
@@ -241,11 +245,13 @@ class Game:
         # Updates every spike and checks for collisions with player
         for spike in self.spikes:
             spike.update(dt)
-            if spike.rect.colliderect(self.player.rect):
+            if spike.rect.colliderect(self.AI.rect) or spike.rect.colliderect(self.player.rect):
                 self.running = False
 
+
         # Updates the player
-        self.player.update(self.space, self.screen, self.platforms)
+        self.AI.update(self.space, self.screen, self.platforms)
+        self.player.update(player_jump, self.screen, self.platforms)
         # Resets space to false
         self.space = False
 
