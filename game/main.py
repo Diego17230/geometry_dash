@@ -9,18 +9,19 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         # Player Setup
         self.surf = pygame.image.load("images/sprite.png").convert_alpha()
+        # Changes the 16x16 square image to 20x20 since that is the size we tested the AI with
         self.surf = pygame.transform.scale(self.surf, (20, 20))
         self.rect = self.surf.get_rect(center=(250, 250))
+        # Sets x and y velocity to 0
         self.vel = [0, 0]
         self.on_ground = True
+        """Adds a sepereate surface and hitbox above the player to check if 
+        there is a platform above the player"""
         self.platform_check = pygame.Surface((20, 40))
         self.platform_hitbox = self.platform_check.get_rect(center=(self.rect.centerx, self.rect.centery - 30))
-        # Player has an obstacle hitbox that will detect incoming obstacles
-        # This is used for the AI
 
     def update(self, space, screen, platform_group):
         # Sets space (Jump) to whatever was inputted in the update function
-        self.space = space
         # Checks for collisions
         collision = self.ground_collision_detector(platform_group)
         if collision:
@@ -29,11 +30,11 @@ class Player(pygame.sprite.Sprite):
             self.on_ground = False
 
         # Jumping
-        if self.space and self.on_ground:
+        if space and self.on_ground:
             self.jump()
 
         # On ground
-        if self.on_ground and not self.space:
+        if self.on_ground and not space:
             self.vel[1] = 0
 
         # Gravity
@@ -89,6 +90,7 @@ class Platform(pygame.sprite.Sprite):
         super().__init__()
         # Sets width and height using parameter values
         self.surf = pygame.image.load("images/platform.png").convert_alpha()
+        # Scales up the image
         self.surf = pygame.transform.scale(self.surf, (width, height))
         # Sets hitbox and location
         self.rect = self.surf.get_rect(center=(x, y))
@@ -103,34 +105,42 @@ class Platform(pygame.sprite.Sprite):
 class Game:
     def __init__(self):
         self.clock = pygame.time.Clock()
+        # Will run the game while this is true
         self.running = True
         pygame.init()
+        # Sets the screen
         self.screen = pygame.display.set_mode((500, 500))
+        # Creates the player
         self.player = Player()
+        # Initilizes the space variable (space = whether AI should jump or not)
         self.space = False
+        # Creates the ground as a giant platform
         self.ground = Platform(500, 20, 250, 310)
+        # Adds the ground to the platforms group
         self.platforms = pygame.sprite.Group(self.ground)
+        # Adds player and ground to all sprites group
         self.all_sprites = pygame.sprite.Group(self.player, self.ground)
+        # Creates spikes group
         self.spikes = pygame.sprite.Group()
+
+        # Creates delays for the platform and spikes (number = amount of frames)
         self.platform_delay = 45
         self.spike_delay = 60
         self.incoming_obstacles = []
-        self.jump_timer = -1
+
 
         while self.running:
             self.update()
 
     def check_distance(self, obj1, obj2):
+        """This function returns a tuple (x, y)
+        of the distance between two objects"""
         return obj2.rect.centerx - obj1.rect.centerx, obj2.rect.y - obj1.rect.y
 
     def update(self):
+        """This function is run every frame of the game and returns nothing"""
         # Sets delta time to the clock tick (will help catch up if application lags)
         dt = self.clock.tick(30)
-
-        # Jump timer (used for a delay in jump when the AI needs to do so)
-        if self.jump_timer == 0:
-            self.space = True
-        self.jump_timer -= 1
 
         # Checks if there are two or more obstacles coming towards the player
         if len(self.incoming_obstacles) >= 2:
@@ -139,7 +149,7 @@ class Game:
             obstacle2 = self.incoming_obstacles[1]
 
             """Checks if the x distance between the first and second obstacle
-            is greater than 80 pixels (meaning the objects are too far away
+            is greater than 75 pixels (meaning the objects are too far away
             to be jumped over using only one jump) Also checks if the player is
             close enough to the first object to jump"""
             if self.check_distance(obstacle1, obstacle2)[0] >= 75:
@@ -150,19 +160,38 @@ class Game:
                     self.incoming_obstacles.remove(obstacle1)
                 elif isinstance(obstacle1, Platform) and \
                         self.check_distance(obstacle1, self.player)[0] > 5:
+                    """
+                    Removes platform once it's slightly behind the player
+                    so the platform dectector attached to the player
+                    can check if its collding with a platform in the 
+                    incoming_obstacles list (used for stopping AI from jumping
+                    when there is a platform above it)
+                    """
                     self.incoming_obstacles.remove(obstacle1)
 
             elif self.check_distance(obstacle1, obstacle2)[0] < 75:
                 if isinstance(obstacle1, Spike):
-                    if self.check_distance(obstacle1, obstacle2)[0] > 40:
-                        if self.check_distance(self.player, obstacle1)[0] < 40:
+                    """
+                    Checks if the distance between the spike and the platform
+                    is greater than 40 meaning the platform is fairly far
+                    and the AI should jump later
+                    """
+                    if self.check_distance(obstacle1, obstacle2)[0] > 40 and\
+                            self.check_distance(self.player, obstacle1)[0] < 40:
+
                             self.space = True
                             self.incoming_obstacles.remove(obstacle1)
                             self.incoming_obstacles.remove(obstacle2)
+                    # Can jump at a normal distance because the two obstacles
+                    # must be close enough there is no need to change the timing
                     elif self.check_distance(self.player, obstacle1)[0] < 80:
                         self.space = True
                         self.incoming_obstacles.remove(obstacle1)
                         self.incoming_obstacles.remove(obstacle2)
+                # The platform is ahead of the spike meaning the AI needs to
+                # jump earlier since the platform is wider and higher in the
+                # y position than a spike
+                # (The bot can fall off from the platform and still get over the spike as well)
                 elif isinstance(obstacle1, Platform) and self.check_distance(self.player, obstacle1)[0] < 120:
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
@@ -170,15 +199,20 @@ class Game:
 
         elif len(self.incoming_obstacles) == 1:
             obstacle1 = self.incoming_obstacles[0]
+            # Jumps over a single spike at correct timing
             if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 100:
                 self.space = True
                 self.incoming_obstacles.remove(obstacle1)
+            # Stays on ground and removes single platform from the incoming_obstacles
+            # once it passes
             elif isinstance(obstacle1, Platform) and self.check_distance(obstacle1, self.player)[0] > -25:
                 self.incoming_obstacles.remove(obstacle1)
 
+        # Lowers the spike and platform delay by 1 every frame
         self.platform_delay -= 1
         self.spike_delay -= 1
 
+        # Checks and adds obstacles if delay is <= 0
         if self.platform_delay <= 0:
             platform = Platform(50, 10, 500, 250)
 
@@ -192,30 +226,35 @@ class Game:
             self.incoming_obstacles.append(spike)
             self.spike_delay = 61
 
+        # Checks if player has clicked any keys to end the game
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE or event.type == QUIT:
                     self.running = False
-                if event.key == K_SPACE:
-                    self.space = True
 
+        # Updates every platform in the platform group (except the ground)
         for platform in self.platforms:
             if platform != self.ground:
                 platform.update(dt)
 
+        # Updates every spike and checks for collisions with player
         for spike in self.spikes:
             spike.update(dt)
             if spike.rect.colliderect(self.player.rect):
                 self.running = False
 
+        # Updates the player
         self.player.update(self.space, self.screen, self.platforms)
+        # Resets space to false
         self.space = False
 
+        # Sets the background to black
         self.screen.fill((0, 0, 0))
-        self.screen.blit(self.player.surf, self.player.rect)
 
+        # Adds all sprites on screen
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+        # Displays the new screen
         pygame.display.flip()
 
 
