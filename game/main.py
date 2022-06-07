@@ -151,6 +151,7 @@ class Game:
                 elif isinstance(obstacle1, Platform) and \
                         self.check_distance(obstacle1, self.player)[0] > 5:
                     self.incoming_obstacles.remove(obstacle1)
+
             elif self.check_distance(obstacle1, obstacle2)[0] < 75:
                 if isinstance(obstacle1, Spike):
                     if self.check_distance(obstacle1, obstacle2)[0] > 40:
@@ -166,6 +167,7 @@ class Game:
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                     self.incoming_obstacles.remove(obstacle2)
+
         elif len(self.incoming_obstacles) == 1:
             obstacle1 = self.incoming_obstacles[0]
             if isinstance(obstacle1, Spike) and self.check_distance(self.player, obstacle1)[0] < 100:
@@ -192,12 +194,10 @@ class Game:
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+                if event.key == K_ESCAPE or event.type == QUIT:
                     self.running = False
                 if event.key == K_SPACE:
                     self.space = True
-            elif event.type == QUIT:
-                self.running = False
 
         for platform in self.platforms:
             if platform != self.ground:
@@ -205,7 +205,6 @@ class Game:
 
         for spike in self.spikes:
             spike.update(dt)
-
             if spike.rect.colliderect(self.player.rect):
                 self.running = False
 
