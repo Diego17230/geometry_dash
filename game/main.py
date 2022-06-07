@@ -124,8 +124,8 @@ class Game:
         self.spikes = pygame.sprite.Group()
 
         # Creates delays for the platform and spikes (number = amount of frames)
-        self.platform_delay = 45
-        self.spike_delay = 60
+        self.platform_delay = 60
+        self.spike_delay = 45
         self.incoming_obstacles = []
 
 
@@ -176,14 +176,15 @@ class Game:
                     is greater than 40 meaning the platform is fairly far
                     and the AI should jump later
                     """
-                    if self.check_distance(obstacle1, obstacle2)[0] > 40 and\
-                            self.check_distance(self.player, obstacle1)[0] < 40:
-
+                    if self.check_distance(obstacle1, obstacle2)[0] > 40:
+                        """Checks for when the object is close
+                        (can't be an addon to the other if statement because
+                        if this is false it will run the elif which is to
+                        jump earlier)"""
+                        if self.check_distance(self.player, obstacle1)[0] < 40:
                             self.space = True
                             self.incoming_obstacles.remove(obstacle1)
                             self.incoming_obstacles.remove(obstacle2)
-                    # Can jump at a normal distance because the two obstacles
-                    # must be close enough there is no need to change the timing
                     elif self.check_distance(self.player, obstacle1)[0] < 80:
                         self.space = True
                         self.incoming_obstacles.remove(obstacle1)
