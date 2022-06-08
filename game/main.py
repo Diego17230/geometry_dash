@@ -26,6 +26,7 @@ class Button(pygame.sprite.Sprite):
         else:
             self.rect.centerx = 250
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -143,6 +144,7 @@ class Game:
         self.platforms = pygame.sprite.Group(self.ground)
         # Adds player and ground to all sprites group
         self.all_sprites = pygame.sprite.Group(self.ground)
+        self.score = 0
 
         # Creates the player
         if mode != 1:
@@ -168,6 +170,17 @@ class Game:
                 self.mode2_update()
             elif mode == 2:
                 self.mode3_update()
+
+    def update_score(self):
+        self.score += 1
+        font = pygame.font.Font('freesansbold.ttf', 32)
+        text = font.render('Score: ' + str(self.score), True, (0, 255, 0))
+
+        textRect = text.get_rect()
+
+        # set the center of the rectangular object.
+        textRect.center = (250, 100)
+        self.screen.blit(text, textRect)
 
     def check_distance(self, obj1, obj2):
         """This function returns a tuple (x, y)
@@ -297,6 +310,9 @@ class Game:
         # Sets the background to black
         self.screen.fill((0, 0, 0))
 
+        # Runs score manager
+        self.update_score()
+
         # Adds all sprites on screen
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
@@ -332,6 +348,9 @@ class Game:
         # Sets the background to black
         self.screen.fill((0, 0, 0))
 
+        # Runs score manager
+        self.update_score()
+
         # Adds all sprites on screen
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
@@ -342,6 +361,7 @@ class Game:
         """This function is run every frame of the game and returns nothing"""
         # Sets delta time to the clock tick (will help catch up if application lags)
         dt = self.clock.tick(30)
+        self.score += 1
 
         # Checks if there are two or more obstacles coming towards the player
         if len(self.incoming_obstacles) >= 2:
@@ -438,6 +458,9 @@ class Game:
         # Sets the background to black
         self.screen.fill((0, 0, 0))
 
+        # Runs score manager
+        self.update_score()
+
         # Adds all sprites on screen
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
@@ -461,8 +484,8 @@ class Menu:
             "images/game_background.png").convert_alpha()
         self.img_surf = pygame.transform.scale(self.img_surf, (500, 500))
         self.click_delay = 0
-        running = True
-        while running:
+        self.running = True
+        while self.running:
             self.update()
         
     def update(self):
@@ -475,7 +498,7 @@ class Menu:
             if event.type == KEYDOWN:
                 # if the user quits
                 if event.type == pygame.QUIT or event.key == K_ESCAPE:
-                    running = False
+                    self.running = False
         if pygame.mouse.get_pressed()[0] == 1:
             mouse = pygame.mouse.get_pos()
             # If the user left clicks on the button the game class from the main.py file is called and this
@@ -491,7 +514,6 @@ class Menu:
                 except IndexError:
                     self.mode_button.set_text(self.modes[0])
         pygame.display.update()
-    pygame.quit()
 
 if __name__ == "__main__":
     Menu()
