@@ -4,6 +4,28 @@ import pygame
 from pygame.locals import *
 
 
+# Button class
+class Button(pygame.sprite.Sprite):
+    def __init__(self, text_font: str, size: int, text: str, color: list, pos: tuple):
+        super().__init__()
+        # Makes the surface and the rectangle
+        self.color = color
+        self.text = text
+        self.font = pygame.font.Font(text_font, size)
+        self.surf = self.font.render(self.text, False, self.color)
+        self.rect = self.surf.get_rect()
+        self.rect.center = pos
+
+    def set_text(self, text):
+        self.text = text
+        self.surf = self.font.render(self.text, False, self.color)
+        if len(text) > 13:
+            self.rect.centerx = 180
+        if len(text) > 10:
+            self.rect.centerx = 200
+        else:
+            self.rect.centerx = 250
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -112,7 +134,6 @@ class Game:
         self.clock = pygame.time.Clock()
         # Will run the game while this is true
         self.running = True
-        pygame.init()
         # Sets the screen
         self.screen = pygame.display.set_mode((500, 500))
 
@@ -424,5 +445,53 @@ class Game:
         pygame.display.flip()
 
 
+class Menu:
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((500, 500))
+        self.screen.fill((255, 255, 255))
+        # Makes a button object
+        self.modes = ["AI Only", "Player Only", "AI and Player"]
+        self.start_button = Button("freesansbold.ttf", 50, "Start Game",
+                              (255, 255, 255), (250, 75))
+        self.mode_button = Button("freesansbold.ttf", 40, self.modes[0], (255, 255, 255),
+                             (250, 125))
+        # Gets the image surface and then scales it up
+        self.img_surf = pygame.image.load(
+            "images/game_background.png").convert_alpha()
+        self.img_surf = pygame.transform.scale(self.img_surf, (500, 500))
+        self.click_delay = 0
+        running = True
+        while running:
+            self.update()
+        
+    def update(self):
+        self.click_delay -= 1
+        # blits the image onto the screen and then the button
+        self.screen.blit(self.img_surf, [0, 0])
+        self.screen.blit(self.start_button.surf, self.start_button.rect)
+        self.screen.blit(self.mode_button.surf, self.mode_button.rect)
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                # if the user quits
+                if event.type == pygame.QUIT or event.key == K_ESCAPE:
+                    running = False
+        if pygame.mouse.get_pressed()[0] == 1:
+            mouse = pygame.mouse.get_pos()
+            # If the user left clicks on the button the game class from the main.py file is called and this
+            # pygame is quit
+            if self.start_button.rect.collidepoint(mouse):
+                Game(self.modes.index(self.mode_button.text))
+                pygame.quit()
+            elif self.mode_button.rect.collidepoint(mouse) and self.click_delay < 0:
+                self.click_delay = 60
+                try:
+                    self.mode_button.set_text(
+                        self.modes[self.modes.index(self.mode_button.text) + 1])
+                except IndexError:
+                    self.mode_button.set_text(self.modes[0])
+        pygame.display.update()
+    pygame.quit()
+
 if __name__ == "__main__":
-    Game()
+    Menu()
