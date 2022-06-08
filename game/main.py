@@ -5,7 +5,8 @@ from pygame.locals import *
 
 # Button class
 class Button(pygame.sprite.Sprite):
-    def __init__(self, text_font: str, size: int, text: str, color: list, pos: tuple):
+    def __init__(self, text_font: str, size: int, text: str, color: list,
+                 pos: tuple):
         super().__init__()
         # Makes the surface and the rectangle
         self.color = color
@@ -41,7 +42,8 @@ class Player(pygame.sprite.Sprite):
         """Adds a sepereate surface and hitbox above the player to check if 
         there is a platform above the player"""
         self.platform_check = pygame.Surface((20, 40))
-        self.platform_hitbox = self.platform_check.get_rect(center=(self.rect.centerx, self.rect.centery - 30))
+        self.platform_hitbox = self.platform_check.get_rect(
+            center=(self.rect.centerx, self.rect.centery - 30))
 
     def update(self, space, screen, platform_group):
         # Sets space (Jump) to whatever was inputted in the update function
@@ -113,7 +115,8 @@ class Platform(pygame.sprite.Sprite):
         super().__init__()
         # Sets width and height using parameter values
         if not ground:
-            self.surf = pygame.image.load("images/platform.png").convert_alpha()
+            self.surf = pygame.image.load(
+                "images/platform.png").convert_alpha()
             # Scales up the image
             self.surf = pygame.transform.scale(self.surf, (width, height))
         else:
@@ -175,6 +178,10 @@ class Game:
                 pygame.quit()
                 End()
 
+            if mode != 0 and self.player.dead:
+                pygame.quit()
+                End(self.score)
+
     def update_score(self):
         self.score += 1
         font = pygame.font.Font('freesansbold.ttf', 32)
@@ -191,7 +198,8 @@ class Game:
         of the distance between two objects"""
         return obj2.rect.centerx - obj1.rect.centerx, obj2.rect.y - obj1.rect.y
 
-    def manage_obstacle_delay(self, spike_delay=61, platform_delay=60, random_platforms=False):
+    def manage_obstacle_delay(self, spike_delay=61, platform_delay=60,
+                              random_platforms=False):
         # Lowers the spike and platform delay by 1 every frame
         self.platform_delay -= 1
         self.spike_delay -= 1
@@ -200,7 +208,8 @@ class Game:
         if self.platform_delay <= 0:
             # Checks if random platforms are enabled (Only for single player)
             if random_platforms:
-                platform = Platform(random.randint(25, 100), 10, 500, random.randint(240, 260))
+                platform = Platform(random.randint(25, 100), 10, 500,
+                                    random.randint(240, 260))
             else:
                 platform = Platform(50, 10, 500, 250)
             platform.add(self.platforms, self.all_sprites)
@@ -240,8 +249,9 @@ class Game:
             close enough to the first object to jump"""
             if self.check_distance(obstacle1, obstacle2)[0] >= 75:
                 if isinstance(obstacle1, Spike) and \
-                        self.check_distance(self.AI, obstacle1)[0] < 100\
-                        and not self.AI.platform_hitbox.colliderect(obstacle2.rect):
+                        self.check_distance(self.AI, obstacle1)[0] < 100 \
+                        and not self.AI.platform_hitbox.colliderect(
+                    obstacle2.rect):
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                 elif isinstance(obstacle1, Platform) and \
@@ -279,7 +289,8 @@ class Game:
                 # jump earlier since the platform is wider and higher in the
                 # y position than a spike
                 # (The bot can fall off from the platform and still get over the spike as well)
-                elif isinstance(obstacle1, Platform) and self.check_distance(self.AI, obstacle1)[0] < 120:
+                elif isinstance(obstacle1, Platform) and \
+                        self.check_distance(self.AI, obstacle1)[0] < 120:
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                     self.incoming_obstacles.remove(obstacle2)
@@ -287,12 +298,14 @@ class Game:
         elif len(self.incoming_obstacles) == 1:
             obstacle1 = self.incoming_obstacles[0]
             # Jumps over a single spike at correct timing
-            if isinstance(obstacle1, Spike) and self.check_distance(self.AI, obstacle1)[0] < 100:
+            if isinstance(obstacle1, Spike) and \
+                    self.check_distance(self.AI, obstacle1)[0] < 100:
                 self.space = True
                 self.incoming_obstacles.remove(obstacle1)
             # Stays on ground and removes single platform from the incoming_obstacles
             # once it passes
-            elif isinstance(obstacle1, Platform) and self.check_distance(obstacle1, self.AI)[0] > -25:
+            elif isinstance(obstacle1, Platform) and \
+                    self.check_distance(obstacle1, self.AI)[0] > -25:
                 self.incoming_obstacles.remove(obstacle1)
 
         # Manages everything to do with the obstacle delay (check function for more details)
@@ -326,7 +339,8 @@ class Game:
         dt = self.clock.tick(30)
 
         # Manages everything to do with the obstacle delay (check function for more details)
-        self.manage_obstacle_delay(random.randint(20, 50), random.randint(45, 100), True)
+        self.manage_obstacle_delay(random.randint(20, 50),
+                                   random.randint(45, 100), True)
 
         # Checks if player has clicked any keys to end the game
         for event in pygame.event.get():
@@ -376,8 +390,9 @@ class Game:
             close enough to the first object to jump"""
             if self.check_distance(obstacle1, obstacle2)[0] >= 75:
                 if isinstance(obstacle1, Spike) and \
-                        self.check_distance(self.AI, obstacle1)[0] < 100\
-                        and not self.AI.platform_hitbox.colliderect(obstacle2.rect):
+                        self.check_distance(self.AI, obstacle1)[0] < 100 \
+                        and not self.AI.platform_hitbox.colliderect(
+                    obstacle2.rect):
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                 elif isinstance(obstacle1, Platform) and \
@@ -415,7 +430,8 @@ class Game:
                 # jump earlier since the platform is wider and higher in the
                 # y position than a spike
                 # (The bot can fall off from the platform and still get over the spike as well)
-                elif isinstance(obstacle1, Platform) and self.check_distance(self.AI, obstacle1)[0] < 120:
+                elif isinstance(obstacle1, Platform) and \
+                        self.check_distance(self.AI, obstacle1)[0] < 120:
                     self.space = True
                     self.incoming_obstacles.remove(obstacle1)
                     self.incoming_obstacles.remove(obstacle2)
@@ -423,12 +439,14 @@ class Game:
         elif len(self.incoming_obstacles) == 1:
             obstacle1 = self.incoming_obstacles[0]
             # Jumps over a single spike at correct timing
-            if isinstance(obstacle1, Spike) and self.check_distance(self.AI, obstacle1)[0] < 100:
+            if isinstance(obstacle1, Spike) and \
+                    self.check_distance(self.AI, obstacle1)[0] < 100:
                 self.space = True
                 self.incoming_obstacles.remove(obstacle1)
             # Stays on ground and removes single platform from the incoming_obstacles
             # once it passes
-            elif isinstance(obstacle1, Platform) and self.check_distance(obstacle1, self.AI)[0] > -25:
+            elif isinstance(obstacle1, Platform) and \
+                    self.check_distance(obstacle1, self.AI)[0] > -25:
                 self.incoming_obstacles.remove(obstacle1)
 
         # Manages everything to do with the obstacle delay (check function for more details)
@@ -448,7 +466,6 @@ class Game:
         for spike in self.spikes:
             if spike.rect.colliderect(self.player.rect):
                 self.player.dead = True
-
 
         # Updates the player
         self.AI.update(self.space, self.screen, self.platforms)
@@ -476,9 +493,10 @@ class Menu:
         # Makes a button object
         self.modes = ["AI Only", "Player Only", "AI and Player"]
         self.start_button = Button("freesansbold.ttf", 50, "Start Game",
-                              (255, 255, 255), (250, 75))
-        self.mode_button = Button("freesansbold.ttf", 40, self.modes[0], (255, 255, 255),
-                             (250, 125))
+                                   (255, 255, 255), (250, 75))
+        self.mode_button = Button("freesansbold.ttf", 40, self.modes[0],
+                                  (255, 255, 255),
+                                  (250, 125))
         # Gets the image surface and then scales it up
         self.img_surf = pygame.image.load(
             "images/game_background.png").convert_alpha()
@@ -487,7 +505,7 @@ class Menu:
         self.running = True
         while self.running:
             self.update()
-        
+
     def update(self):
         self.click_delay -= 1
         # blits the image onto the screen and then the button
@@ -506,11 +524,13 @@ class Menu:
             if self.start_button.rect.collidepoint(mouse):
                 Game(self.modes.index(self.mode_button.text))
                 pygame.quit()
-            elif self.mode_button.rect.collidepoint(mouse) and self.click_delay < 0:
+            elif self.mode_button.rect.collidepoint(
+                    mouse) and self.click_delay < 0:
                 self.click_delay = 60
                 try:
                     self.mode_button.set_text(
-                        self.modes[self.modes.index(self.mode_button.text) + 1])
+                        self.modes[
+                            self.modes.index(self.mode_button.text) + 1])
                 except IndexError:
                     self.mode_button.set_text(self.modes[0])
         pygame.display.update()
@@ -548,5 +568,53 @@ class End:
         self.screen.blit(self.continue_button.surf, self.continue_button.rect)
         pygame.display.flip()
 
+    pygame.quit()
+
+
+class End:
+    def __init__(self, score):
+        pygame.init()
+
+        # Adds the text
+        font = pygame.font.Font('freesansbold.ttf', 32)
+        self.text = font.render('Score: ' + str(score), True, (0, 255, 0))
+        self.textRect = self.text.get_rect()
+        # set the center of the rectangular object.
+        self.textRect.center = (425, 25)
+
+
+        self.died_button = Button("freesansbold.ttf", 40, "You Died!",
+                                  (255, 255, 255), (250, 125))
+        self.continue_button = Button("freesansbold.ttf", 40, "Continue?",
+                                      (255, 255, 255), (250, 300))
+        self.screen = pygame.display.set_mode((500, 500))
+        self.img_surf = pygame.image.load(
+            "images/game_background.png").convert_alpha()
+        self.img_surf = pygame.transform.scale(self.img_surf, (500, 500))
+        self.running = True
+        while self.running:
+            self.update()
+
+    def update(self):
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                # if the user quits
+                if event.type == pygame.QUIT or event.key == K_ESCAPE:
+                    self.running = False
+        if pygame.mouse.get_pressed()[0] == 1:
+            mouse = pygame.mouse.get_pos()
+            # If the user left clicks on the button the game class from the main.py file is called and this
+            # pygame is quit
+            if self.continue_button.rect.collidepoint(mouse):
+                Menu()
+                pygame.quit()
+        self.screen.blit(self.img_surf, [0, 0])
+        self.screen.blit(self.died_button.surf, self.died_button.rect)
+        self.screen.blit(self.continue_button.surf, self.continue_button.rect)
+        self.screen.blit(self.text, self.textRect)
+        pygame.display.flip()
+
+
 if __name__ == "__main__":
     Menu()
+
