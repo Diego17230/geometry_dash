@@ -1,5 +1,4 @@
 import random
-
 import pygame
 from pygame.locals import *
 
@@ -26,6 +25,7 @@ class Button(pygame.sprite.Sprite):
         else:
             self.rect.centerx = 250
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -37,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         # Sets x and y velocity to 0
         self.vel = [0, 0]
         self.on_ground = True
+        self.dead = False
         """Adds a sepereate surface and hitbox above the player to check if 
         there is a platform above the player"""
         self.platform_check = pygame.Surface((20, 40))
@@ -136,7 +137,6 @@ class Game:
         self.running = True
         # Sets the screen
         self.screen = pygame.display.set_mode((500, 500))
-
         # Creates the ground as a giant platform
         self.ground = Platform(500, 20, 250, 310, True)
         # Adds the ground to the platforms group
@@ -151,7 +151,7 @@ class Game:
         if mode != 0:
             self.player = Player(250, 250)
             self.player.add(self.all_sprites)
-        # Initilizes the space variable (space = whether AI should jump or not)
+        # Initializes the space variable (space = whether AI should jump or not)
         self.space = False
         # Creates spikes group
         self.spikes = pygame.sprite.Group()
@@ -168,6 +168,10 @@ class Game:
                 self.mode2_update()
             elif mode == 2:
                 self.mode3_update()
+
+            if mode != 0 and self.player.dead:
+                pygame.quit()
+                End()
 
     def check_distance(self, obj1, obj2):
         """This function returns a tuple (x, y)
@@ -449,7 +453,6 @@ class Menu:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((500, 500))
-        self.screen.fill((255, 255, 255))
         # Makes a button object
         self.modes = ["AI Only", "Player Only", "AI and Player"]
         self.start_button = Button("freesansbold.ttf", 50, "Start Game",
@@ -475,7 +478,7 @@ class Menu:
             if event.type == KEYDOWN:
                 # if the user quits
                 if event.type == pygame.QUIT or event.key == K_ESCAPE:
-                    running = False
+                    self.running = False
         if pygame.mouse.get_pressed()[0] == 1:
             mouse = pygame.mouse.get_pos()
             # If the user left clicks on the button the game class from the main.py file is called and this
@@ -492,6 +495,38 @@ class Menu:
                     self.mode_button.set_text(self.modes[0])
         pygame.display.update()
     pygame.quit()
+
+
+class End:
+    def __init__(self):
+        pygame.init()
+        self.died_button = Button("freesansbold.ttf", 40, "You Died!", (255, 255, 255), (250, 75))
+        self.continue_button = Button("freesansbold.ttf", 40, "Continue?", (255, 255, 255), (250, 300))
+        self.screen = pygame.display.set_mode((500, 500))
+        self.img_surf = pygame.image.load(
+            "images/game_background.png").convert_alpha()
+        self.img_surf = pygame.transform.scale(self.img_surf, (500, 500))
+        self.running = True
+        while self.running:
+            self.update()
+
+    def update(self):
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                # if the user quits
+                if event.type == pygame.QUIT or event.key == K_ESCAPE:
+                    self.running = False
+        if pygame.mouse.get_pressed()[0] == 1:
+            mouse = pygame.mouse.get_pos()
+            # If the user left clicks on the button the game class from the main.py file is called and this
+            # pygame is quit
+            if self.continue_button.rect.collidepoint(mouse):
+                Menu()
+                pygame.quit()
+        self.screen.blit(self.img_surf, [0, 0])
+        self.screen.blit(self.died_button.surf, self.died_button.rect)
+        self.screen.blit(self.continue_button.surf, self.continue_button.rect)
+        pygame.display.flip()
 
 if __name__ == "__main__":
     Menu()
