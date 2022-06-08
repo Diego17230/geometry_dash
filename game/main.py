@@ -461,8 +461,10 @@ class Game:
                 if event.key == K_SPACE:
                     player_jump = True
 
+        # Updates the obstacles
         self.update_obstacles(dt)
 
+        # If the user collides with spikes, it gets set to dead
         for spike in self.spikes:
             if spike.rect.colliderect(self.player.rect):
                 self.player.dead = True
@@ -490,8 +492,9 @@ class Menu:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((500, 500))
-        # Makes a button object
+        # Makes the modes
         self.modes = ["AI Only", "Player Only", "AI and Player"]
+        # Makes button objects
         self.start_button = Button("freesansbold.ttf", 50, "Start Game",
                                    (255, 255, 255), (250, 75))
         self.mode_button = Button("freesansbold.ttf", 40, self.modes[0],
@@ -519,14 +522,14 @@ class Menu:
                     self.running = False
         if pygame.mouse.get_pressed()[0] == 1:
             mouse = pygame.mouse.get_pos()
-            # If the user left clicks on the button the game class from the main.py file is called and this
-            # pygame is quit
+            # If the user left clicks on the button the game class is called and this pygame is quit
             if self.start_button.rect.collidepoint(mouse):
                 Game(self.modes.index(self.mode_button.text))
                 pygame.quit()
+            # Changes the mode and blits the text onto the screen
             elif self.mode_button.rect.collidepoint(
                     mouse) and self.click_delay < 0:
-                self.click_delay = 60
+                self.click_delay = 30
                 try:
                     self.mode_button.set_text(
                         self.modes[
@@ -540,6 +543,7 @@ class Menu:
 class End:
     def __init__(self):
         pygame.init()
+        # Makes the button objects
         self.died_button = Button("freesansbold.ttf", 40, "You Died!", (255, 255, 255), (250, 75))
         self.continue_button = Button("freesansbold.ttf", 40, "Continue?", (255, 255, 255), (250, 300))
         self.screen = pygame.display.set_mode((500, 500))
@@ -558,11 +562,12 @@ class End:
                     self.running = False
         if pygame.mouse.get_pressed()[0] == 1:
             mouse = pygame.mouse.get_pos()
-            # If the user left clicks on the button the game class from the main.py file is called and this
+            # If the user left clicks on the button the Menu class is called and this
             # pygame is quit
             if self.continue_button.rect.collidepoint(mouse):
                 Menu()
                 pygame.quit()
+        # Blits the images and buttons onto the screen
         self.screen.blit(self.img_surf, [0, 0])
         self.screen.blit(self.died_button.surf, self.died_button.rect)
         self.screen.blit(self.continue_button.surf, self.continue_button.rect)
