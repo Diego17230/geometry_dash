@@ -127,7 +127,7 @@ p a:hover {
 }
 #gif-subtitle {
   color: slategrey;
-  padding-left: 390px;
+  padding-left: 280px;
 }
 #geodash-gif:hover ~ #gif-subtitle {
   color: white;
