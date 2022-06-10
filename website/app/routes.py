@@ -11,8 +11,3 @@ def index():
 @app.route('/download')
 def download():
     return render_template('download.html', title='Download')
-
-
-@app.route('/watch')
-def watch():
-    return render_template('watch.html', title='Watch')

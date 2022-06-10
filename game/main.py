@@ -1,5 +1,6 @@
 import random
 import sys
+import os
 
 import pygame
 from pygame.locals import *
@@ -13,7 +14,7 @@ class Button(pygame.sprite.Sprite):
         # Makes the surface and the rectangle
         self.color = color
         self.text = text
-        self.font = pygame.font.Font(text_font, size)
+        self.font = pygame.font.SysFont(text_font, size)
         self.surf = self.font.render(self.text, False, self.color)
         self.rect = self.surf.get_rect()
         self.rect.center = pos
@@ -206,7 +207,7 @@ class Game:
         """This function updates the score of the Player/AI"""
         # Adds 1 to the score when called (called every frame)
         self.score += 1
-        font = pygame.font.Font('freesansbold.ttf', 32)
+        font = pygame.font.SysFont('Comic Sans MS', 32)
         # Sets the text to the updated score
         text = font.render('Score: ' + str(self.score), True, (0, 255, 0))
 
@@ -342,8 +343,17 @@ class Game:
 
         # Checks if player has clicked any keys to end the game
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # A little overkill on quitting the game perhaps
+                # but everything is stopped
+                self.running = False
+                pygame.quit()
+                # More of a brute force method because there was a problem
+                # with the pygame.font (Still not sure why)
+                sys.exit()
+                return
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE or event.type == QUIT:
+                if event.key == K_ESCAPE:
                     # A little overkill on quitting the game perhaps
                     # but everything is stopped
                     self.running = False
@@ -381,8 +391,17 @@ class Game:
 
         # Checks if player has clicked any keys to end the game
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # A little overkill on quitting the game perhaps
+                # but everything is stopped
+                self.running = False
+                pygame.quit()
+                # More of a brute force method because there was a problem
+                # with the pygame.font (Still not sure why)
+                sys.exit()
+                return
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE or event.type == QUIT:
+                if event.key == K_ESCAPE:
                     # A little overkill on quitting the game perhaps
                     # but everything is stopped
                     self.running = False
@@ -502,8 +521,17 @@ class Game:
         player_jump = False
         # Checks if player has clicked any keys to end the game
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # A little overkill on quitting the game perhaps
+                # but everything is stopped
+                self.running = False
+                pygame.quit()
+                # More of a brute force method because there was a problem
+                # with the pygame.font (Still not sure why)
+                sys.exit()
+                return
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE or event.type == QUIT:
+                if event.key == K_ESCAPE:
                     # A little overkill on quitting the game perhaps
                     # but everything is stopped
                     self.running = False
@@ -570,9 +598,14 @@ class Menu:
         self.screen.blit(self.start_button.surf, self.start_button.rect)
         self.screen.blit(self.mode_button.surf, self.mode_button.rect)
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+                pygame.quit()
+                sys.exit()
+                return
             if event.type == KEYDOWN:
                 # if the user quits
-                if event.type == pygame.QUIT or event.key == K_ESCAPE:
+                if event.key == K_ESCAPE:
                     self.running = False
                     pygame.quit()
                     sys.exit()
@@ -587,7 +620,7 @@ class Menu:
                 # Checks if user clicked on mode_button (to change the mode)
                 elif self.mode_button.rect.collidepoint(event.pos) and self.click_delay < 0:
                     # Click delay since it will rapid fire click otherwise
-                    self.click_delay = 30
+                    self.click_delay = 10
                     try:
                         # Will try and go to next mode in list
                         self.mode_button.set_text(
@@ -605,7 +638,7 @@ class Menu:
 class End:
     def __init__(self, score):
         # Adds the text
-        font = pygame.font.Font('freesansbold.ttf', 32)
+        font = pygame.font.SysFont('Comic Sans MS', 32)
         # Addes the score to the screen
         self.text = font.render('Score: ' + str(score), True, (0, 255, 0))
         self.textRect = self.text.get_rect()
@@ -618,7 +651,7 @@ class End:
         self.dead_textRect = self.dead_text.get_rect()
         self.dead_textRect.center = (250, 125)
 
-        self.continue_button = Button("freesansbold.ttf", 40, "Continue?",
+        self.continue_button = Button("font/FreeSansBold.ttf", 40, "Continue?",
                                       (255, 255, 255), (250, 300))
         self.screen = pygame.display.set_mode((500, 500))
         self.img_surf = pygame.image.load(
@@ -631,9 +664,15 @@ class End:
     def update(self):
         """This function runs every frame while this screen is on and returns nothing"""
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # if the user quits
+                self.running = False
+                pygame.quit()
+                sys.exit()
+                return
             if event.type == KEYDOWN:
                 # if the user quits
-                if event.type == pygame.QUIT or event.key == K_ESCAPE:
+                if event.key == K_ESCAPE:
                     self.running = False
                     pygame.quit()
                     sys.exit()
@@ -656,8 +695,9 @@ class End:
 
 
 if __name__ == "__main__":
+    if getattr(sys, 'frozen', False):
+        os.chdir(sys._MEIPASS)
     # Initializes pygame
     pygame.init()
-    # Runs __init__ of menu class
+    # Runs __init__ menu class
     Menu()
-
