@@ -19,8 +19,12 @@ class Button(pygame.sprite.Sprite):
         self.rect.center = pos
 
     def set_text(self, text):
+        """This function changes the text of the button"""
         self.text = text
         self.surf = self.font.render(self.text, False, self.color)
+        # Changes the center of the text depending on how long it is
+        # (This function is only used for the mode settings in the main menu
+        # and if I had more time I would fix this up to be less sloppy and hardcodded)
         if len(text) > 13:
             self.rect.centerx = 180
         if len(text) > 10:
@@ -50,11 +54,11 @@ class Player(pygame.sprite.Sprite):
     def update(self, space, screen, platform_group):
         # Sets space (Jump) to whatever was inputted in the update function
         # Checks for collisions
-        """This function:
+        """
+        This function:
          - Checks for collisions with platforms (on ground)
          - Applies gravity to player
          - Sees if player can/should jump
-         -
         """
         collision = self.ground_collision_detector(platform_group)
         if collision:
@@ -652,6 +656,8 @@ class End:
 
 
 if __name__ == "__main__":
+    # Initializes pygame
     pygame.init()
+    # Runs __init__ of menu class
     Menu()
 
